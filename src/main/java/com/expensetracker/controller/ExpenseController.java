@@ -3,6 +3,8 @@ package com.expensetracker.controller;
 import com.expensetracker.entity.Expense;
 import com.expensetracker.service.ExpenseService;
 
+import jakarta.validation.Valid;
+
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,7 +22,7 @@ public class ExpenseController {
 
     // Add expense (JWT protected)
     @PostMapping
-    public Expense addExpense(@RequestBody Expense expense,
+    public Expense addExpense(@Valid @RequestBody Expense expense,
                               Authentication authentication) {
 
         String email = authentication.getName();
@@ -34,4 +36,24 @@ public class ExpenseController {
         String email = authentication.getName();
         return expenseService.getExpenses(email);
     }
+    
+    // Update expense
+    @PutMapping("/{id}")
+    public Expense updateExpense(@PathVariable Long id,
+                                 @Valid @RequestBody Expense expense,
+                                 Authentication authentication) {
+
+        return expenseService.updateExpense(id, expense, authentication.getName());
+    }
+
+
+    // Delete expense
+    @DeleteMapping("/{id}")
+    public String deleteExpense(@PathVariable Long id,
+                                Authentication authentication) {
+
+        expenseService.deleteExpense(id, authentication.getName());
+        return "Deleted successfully";
+    }
+
 }

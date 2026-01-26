@@ -29,4 +29,36 @@ public class ExpenseService {
     public List<Expense> getExpenses(String email) {
         return expenseRepository.findByUserEmail(email);
     }
+    
+    public Expense updateExpense(Long id, Expense updatedExpense, String email) {
+
+        Expense expense = expenseRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Expense not found"));
+
+        // security check (important)
+        if (!expense.getUser().getEmail().equals(email)) {
+            throw new RuntimeException("Not allowed");
+        }
+
+        expense.setTitle(updatedExpense.getTitle());
+        expense.setAmount(updatedExpense.getAmount());
+        expense.setCategory(updatedExpense.getCategory());
+        expense.setDate(updatedExpense.getDate());
+
+        return expenseRepository.save(expense);
+    }
+    
+    public void deleteExpense(Long id, String email) {
+
+        Expense expense = expenseRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Expense not found"));
+
+        if (!expense.getUser().getEmail().equals(email)) {
+            throw new RuntimeException("Not allowed");
+        }
+
+        expenseRepository.delete(expense);
+    }
+
+
 }
